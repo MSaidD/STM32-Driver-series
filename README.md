@@ -4,5 +4,5 @@ This series' first member is ds1302 that rtc module.
 
 
 
-I wish, It's beneficial for everyone who need this libs
-msaidarici@gmail.com for communication
+I wish, It's beneficial for everyone who need this libs.
+
