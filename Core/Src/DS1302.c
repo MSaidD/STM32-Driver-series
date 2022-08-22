@@ -12,40 +12,44 @@
 #define DS1302_MIN				0x82
 #define DS1302_HOUR				0x84
 #define DS1302_DATE				0x86
-#define DS1302_MONTH			0x88
+#define DS1302_MONTH			        0x88
 #define DS1302_DAY				0x8a
 #define DS1302_YEAR				0x8c
-#define DS1302_CONTROL		0x8e
-#define DS1302_CHARGER		0x90
-#define DS1302_CLKBURST		0xbe
-#define DS1302_RAMBURST 	0xfe
+#define DS1302_CONTROL				0x8e
+#define DS1302_CHARGER				0x90
+#define DS1302_CLKBURST				0xbe
+#define DS1302_RAMBURST 			0xfe
 
-#define RAMSIZE 					0x31	// Ram Size in bytes
-#define DS1302_RAMSTART		0xc0 	// First Address
+#define RAMSIZE 				0x31	// Ram Size in bytes
+#define DS1302_RAMSTART				0xc0 	// First Address
 
 // GPIO Pins
-#define DS1302_GPIO	GPIOC
-#define DS1302_SCLK	GPIO_PIN_0
-#define DS1302_SDA	GPIO_PIN_1
-#define DS1302_RST	GPIO_PIN_2
+#define DS1302_GPIO				GPIOC
+#define DS1302_SCLK				GPIO_PIN_0
+#define DS1302_SDA				GPIO_PIN_1
+#define DS1302_RST				GPIO_PIN_2
 
-uint8_t BCD2DEC(uint8_t bcd) {
+//Conversion BCD to Decimal
+uint8_t BCD2DEC(uint8_t bcd) 
+{
   return (10 * ((bcd & 0xF0) >> 4) + (bcd & 0x0F));
 }
-
-uint8_t DEC2BCD(uint8_t dec) {
+// Conversion Decimal to BCD
+uint8_t DEC2BCD(uint8_t dec) 
+{
   const uint8_t tens = dec / 10;
   const uint8_t ones = dec % 10;
   return (tens << 4) | ones;
 }
-
+//Clock signal
 void pulse_clk(void){
 	HAL_GPIO_WritePin(DS1302_GPIO, DS1302_SCLK, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(DS1302_GPIO, DS1302_SCLK, GPIO_PIN_RESET);
 }
 
 // SDA Write(output) Mode
-void writeSDA(void) {
+void writeSDA(void) 
+{
 	GPIO_InitTypeDef GPIO_InitStructure;
 
 	GPIO_InitStructure.Pin = DS1302_SDA;
@@ -55,7 +59,8 @@ void writeSDA(void) {
 }
 
 // SDA Read(input) Mode
-void readSDA(void) {
+void readSDA(void) 
+{
 	GPIO_InitTypeDef GPIO_InitStructure;
 
 	GPIO_InitStructure.Pin = DS1302_SDA;
@@ -66,7 +71,8 @@ void readSDA(void) {
 }
 
 /* Sends an address or command */
-void DS1302_SendCmd(uint8_t cmd) {
+void DS1302_SendCmd(uint8_t cmd) 
+{
 	uint8_t i;
 	for (i = 0; i < 8; i ++)
 	{
@@ -238,7 +244,8 @@ void DS1302_WriteRam(uint8_t addr, uint8_t val) {
 }
 
 /* Reads ram address 'addr' */
-uint8_t DS1302_ReadRam(uint8_t addr) {
+uint8_t DS1302_ReadRam(uint8_t addr) 
+{
 	if (addr >= RAMSIZE) {
 		return 0;
 	}
@@ -255,7 +262,8 @@ void DS1302_ClearRam(void) {
 }
 
 /* Reads time in burst mode, includes control byte */
-void DS1302_ReadTimeBurst(uint8_t * buf) {
+void DS1302_ReadTimeBurst(uint8_t * buf) 
+{
 	uint8_t temp[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 	DS1302_ReadBurst(DS1302_CLKBURST, 8, temp);
@@ -271,7 +279,8 @@ void DS1302_ReadTimeBurst(uint8_t * buf) {
 }
 
 /* Writes time in burst mode, includes control byte */
-void DS1302_WriteTimeBurst(uint8_t * buf) {
+void DS1302_WriteTimeBurst(uint8_t * buf) 
+{
 	uint8_t temp[8];
 
 	temp[0]=DEC2BCD(buf[6]);	// Sec
@@ -287,7 +296,8 @@ void DS1302_WriteTimeBurst(uint8_t * buf) {
 }
 
 /* Reads ram in burst mode 'len' bytes into 'buf' */
-void DS1302_ReadRamBurst(uint8_t len, uint8_t * buf) {
+void DS1302_ReadRamBurst(uint8_t len, uint8_t * buf) 
+{
 	uint8_t i;
 	if(len <= 0) {
 		return;
@@ -302,7 +312,8 @@ void DS1302_ReadRamBurst(uint8_t len, uint8_t * buf) {
 }
 
 /* Writes ram in burst mode 'len' bytes from 'buf' */
-void DS1302_WriteRamBurst(uint8_t len, uint8_t * buf) {
+void DS1302_WriteRamBurst(uint8_t len, uint8_t * buf) 
+{
 	if(len <= 0) {
 		return;
 	}
